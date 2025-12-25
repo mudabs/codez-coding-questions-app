@@ -1,9 +1,22 @@
+"""
+Token service
+
+Contains all business logic related to token management.
+API routes should NEVER directly change tokens.
+"""
+
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.token_ledger import TokenLedger
 import uuid
 
 def add_tokens(db: Session, user_id: str, amount: int, reason: str):
+    """
+    Add tokens to a user.
+
+    - Increases user's token balance
+    - Records the change in the token ledger
+    """
     user = db.get(User, user_id)
     if not user:
         raise ValueError("User not found")
@@ -20,6 +33,13 @@ def add_tokens(db: Session, user_id: str, amount: int, reason: str):
     return user
 
 def consume_tokens(db: Session, user_id: str, amount: int, reason: str):
+    """
+    Consume tokens from a user.
+
+    - Validates sufficient balance
+    - Decreases tokens
+    - Logs the usage in the ledger
+    """
     user = db.get(User, user_id)
     if not user:
         raise ValueError("User not found")

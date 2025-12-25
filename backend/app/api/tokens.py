@@ -1,3 +1,9 @@
+"""
+Token API routes
+
+These endpoints expose token functionality to clients.
+They delegate logic to the token service.
+"""
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
