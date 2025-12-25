@@ -6,21 +6,44 @@ These tests verify:
 - Tokens can be consumed
 - Errors are handled correctly
 """
+import uuid
+
+def unique_email():
+    return f"{uuid.uuid4()}@example.com"
+
+# def test_add_tokens(client):
+#     # Create a user first
+#     response = client.post("/users", json={"email": "pytest@example.com"})
+#     user = response.json()
+#     user_id = user["id"]
+
+#     # Add tokens
+#     response = client.post(
+#         f"/tokens/add/{user_id}/5",
+#         params={"reason": "test"}
+#     )
+
+#     assert response.status_code == 200
+#     assert response.json()["tokens"] == 5
 
 def test_add_tokens(client):
-    # Create a user first
-    response = client.post("/users", json={"email": "pytest@example.com"})
+    response = client.post(
+        "/users",
+        json={"email": unique_email()}
+    )
+
     user = response.json()
     user_id = user["id"]
 
-    # Add tokens
     response = client.post(
-        f"/tokens/add/{user_id}/5",
-        params={"reason": "test"}
+        f"/tokens/add/{user_id}",
+        json={"amount": 10}
     )
 
     assert response.status_code == 200
-    assert response.json()["tokens"] == 5
+    assert response.json()["tokens"] == 15
+
+
 
 
 def test_consume_tokens(client):

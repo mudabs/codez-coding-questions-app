@@ -4,7 +4,7 @@ Token API routes
 These endpoints expose token functionality to clients.
 They delegate logic to the token service.
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.services.token_service import add_tokens, consume_tokens
@@ -20,8 +20,14 @@ def get_db():
 
 @router.post("/add/{user_id}/{amount}")
 def add(user_id: str, amount: int, reason: str, db: Session = Depends(get_db)):
-    return add_tokens(db, user_id, amount, reason)
+    try:
+        return add_tokens(db, user_id, amount, reason)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/consume/{user_id}/{amount}")
 def consume(user_id: str, amount: int, reason: str, db: Session = Depends(get_db)):
-    return consume_tokens(db, user_id, amount, reason)
+    try:
+        return consume_tokens(db, user_id, amount, reason)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
