@@ -13,6 +13,7 @@ Keeping this separate makes the code:
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 import os
+from jose import JWTError
 
 
 # These values come from .env
@@ -55,3 +56,31 @@ def create_access_token(data: dict) -> str:
     )
 
     return encoded_jwt
+
+def decode_access_token(token: str) -> dict:
+    """
+    Decode and validate a JWT token.
+
+    Parameters:
+    - token: JWT string from Authorization header
+
+    Returns:
+    - decoded payload (dict)
+
+    Raises:
+    - JWTError if token is invalid or expired
+    """
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+        return payload
+    except JWTError:
+        # Any problem with the token ends up here:
+        # - expired
+        # - wrong signature
+        # - malformed
+        raise
